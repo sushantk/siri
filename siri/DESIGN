@@ -1,0 +1,9 @@
+TaskManager
+   * Interleaves sync and async tasks
+   * If all sync tasks are over, then waits for an async task to get ready
+   * Makes sure tasks execute in a single thread
+   
+Logging
+
+Event
+

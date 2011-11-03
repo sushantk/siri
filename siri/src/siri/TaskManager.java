@@ -12,14 +12,20 @@ public class TaskManager {
     static final Logger logger = LoggerFactory.getLogger(TaskManager.class);
     static long WAIT_QUANTUM = 100;
 
+    boolean m_logging;
+
     IdentityHashMap<ITask, ITask> m_tasks = new IdentityHashMap<ITask, ITask>();
     short m_taskCount = 0;
     
     LinkedList<ITask> m_syncTasks = new LinkedList<ITask>();
     ConcurrentLinkedQueue<ITask> m_asyncTasks = new ConcurrentLinkedQueue<ITask>();
     
+    public TaskManager(boolean a_logging) {
+        m_logging = a_logging;
+    }
+    
     public void notifyTask(ITask a_task) {
-        if(logger.isTraceEnabled()) logger.trace("Task is ready: {}", a_task);
+        if(m_logging) logger.trace("Task is ready: {}", a_task);
 
         m_asyncTasks.add(a_task);
         
@@ -30,7 +36,7 @@ public class TaskManager {
 
     public void addTask(ITask a_task) {
         if(m_tasks.containsKey(a_task)) {
-            if(logger.isTraceEnabled()) logger.trace("Task already exists: {}", a_task);
+            if(m_logging) logger.trace("Task already exists: {}", a_task);
             return;
         }        
         m_tasks.put(a_task,  a_task);        
@@ -42,7 +48,7 @@ public class TaskManager {
         // async tasks must tell us when they are ready to be run
         
         m_taskCount++;
-        if(logger.isTraceEnabled()) logger.trace("Task added: {}", a_task);
+        if(m_logging) logger.trace("Task added: {}", a_task);
     }
 
     public void run() {
@@ -56,14 +62,14 @@ public class TaskManager {
             
             ITask syncTask = m_syncTasks.poll();
             if(null != syncTask) {
-                if(logger.isTraceEnabled()) logger.trace("Running sync task: {}", syncTask);
+                if(m_logging) logger.trace("Running sync task: {}", syncTask);
                 
                 // needs more cycle, so lets push it back again
                 if(ITask.Status.TASK_DONE != syncTask.run()) {
-                    if(logger.isTraceEnabled()) logger.trace("Sync taskis NOT done: {}", syncTask);
+                    if(m_logging) logger.trace("Sync taskis NOT done: {}", syncTask);
                     m_syncTasks.add(syncTask);
                 } else {
-                    if(logger.isTraceEnabled()) logger.trace("Sync task is done: {}", syncTask);
+                    if(m_logging) logger.trace("Sync task is done: {}", syncTask);
                     m_tasks.remove(syncTask);
                 }
                 
@@ -72,11 +78,11 @@ public class TaskManager {
             
             ITask asyncTask;
             while(null != (asyncTask = m_asyncTasks.poll())) {
-                if(logger.isTraceEnabled()) logger.trace("Running async task: {}", asyncTask);
+                if(m_logging) logger.trace("Running async task: {}", asyncTask);
                 
                 // async tasks need to tell us, if they need more cycles
                 if(ITask.Status.TASK_DONE == asyncTask.run()) {
-                    if(logger.isTraceEnabled()) logger.trace("Async task is done: {}", asyncTask);
+                    if(m_logging) logger.trace("Async task is done: {}", asyncTask);
                     m_tasks.remove(asyncTask);
                 }
                 
@@ -89,7 +95,7 @@ public class TaskManager {
                 }
                 
                 try {
-                    if(logger.isTraceEnabled()) logger.trace("Waiting for async tasks to get ready.");
+                    if(m_logging) logger.trace("Waiting for async tasks to get ready.");
                     synchronized(m_asyncTasks) {
                         m_asyncTasks.wait(WAIT_QUANTUM);
                     }
@@ -102,6 +108,6 @@ public class TaskManager {
             // abort all async tasks at some point
         }
         
-        if(logger.isTraceEnabled()) logger.trace("TaskManager stat (tasks/left): {}/{}", m_taskCount, m_tasks.size());
+        if(m_logging) logger.trace("TaskManager stat (tasks/left): {}/{}", m_taskCount, m_tasks.size());
     }
 }

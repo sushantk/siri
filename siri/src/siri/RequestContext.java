@@ -5,7 +5,8 @@ public class RequestContext {
     private TaskManager m_taskManager;
 
     public RequestContext() {
-        m_taskManager = new TaskManager();
+        // Are we logging?
+        m_taskManager = new TaskManager(true);
     }
     
     public TaskManager getTaskManager() {
