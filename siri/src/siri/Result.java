@@ -3,5 +3,6 @@ package siri;
 public enum Result {
 
     SUCCESS,
-    FAILED
+    FAILED, 
+    INVALID_OBJECT_TREE
 }

@@ -2,10 +2,14 @@ package siri;
 
 public abstract class Configurable implements IConfigurable {
     
-    public Configurable(ConfigTree a_tree) {
+    public Configurable(ObjectTree a_tree) {
         assert a_tree != null;
         m_tree = a_tree;
     }
     
-    protected ConfigTree m_tree;
+    public ObjectTree getObjectTree() {
+        return m_tree;
+    }
+    
+    protected ObjectTree m_tree;
 }

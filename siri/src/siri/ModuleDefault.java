@@ -3,20 +3,22 @@ package siri;
 public class ModuleDefault extends Configurable 
                            implements IModule, IRequestCallback {
     
+    private Context m_context;
     private IRequestCallback m_callback;
 
-    public ModuleDefault(ConfigTree a_tree) {
+    public ModuleDefault(ObjectTree a_tree) {
         super(a_tree);
     }
 
     @Override
     public Result execute(Context a_context, IRequestCallback a_callback) {
+        m_context = a_context;
         m_callback = a_callback;
         
         // TODO: ask controller for the source id
-        ISource source = (ISource) ObjectFactory.create(m_tree, Consts.source, null, Consts.SourceWebService, false);
+        ISource source = (ISource) ObjectFactory.create(m_context, this, Consts.source, null, Consts.SourceWebService, true);
         if(null == source) {
-            source = new SourceWebService();
+            source = new SourceWebService(null);
         }
         
         return source.get(a_context, this);
@@ -28,9 +30,9 @@ public class ModuleDefault extends Configurable
         String rendererId = a_context.get(Consts.renderer_id);
         
         //TODO: stringtemplate?
-        IRenderer renderer = (IRenderer) ObjectFactory.create(m_tree, Consts.renderer, rendererId, Consts.RendererIdentity, false);
+        IRenderer renderer = (IRenderer) ObjectFactory.create(m_context, this, Consts.renderer, rendererId, Consts.RendererIdentity, false);
         if(null == renderer) {
-            renderer = new RendererIdentity();
+            renderer = new RendererIdentity(null);
         }
                 
         return renderer.transform(a_context, a_data);

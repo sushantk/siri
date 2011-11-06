@@ -5,10 +5,11 @@ public final class Consts {
     // tags
     public static final String renderer = "renderer";
     public static final String source = "source";
+    public static final String url = "url";
     
     // classes
-    public static final String RendererIdentity = "RendererIdentity";
-    public static final String SourceWebService = "SourceWebService";
+    public static final String RendererIdentity = "siri.RendererIdentity";
+    public static final String SourceWebService = "siri.SourceWebService";
     
     // attributes
     public static final String id = "id";
