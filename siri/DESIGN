@@ -2,8 +2,18 @@ TaskManager
    * Interleaves sync and async tasks
    * If all sync tasks are over, then waits for an async task to get ready
    * Makes sure tasks execute in a single thread
+
+SourceWebService
+   * deduping
+   * populate metadata in DO
+
+SourceCache
+   * "use" for subsource
+   * collapse when refreshing
    
 Logging
 
 Event
 
+ObjectTree:
+   * "use" - two phase configure

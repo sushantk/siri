@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/httpasyncclient-4.0-alpha3.jar"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/logback-classic-0.9.30.jar"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/logback-core-0.9.30.jar"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/slf4j-api-1.6.3.jar"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/httpclient-4.1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/httpcore-4.2-alpha2.jar"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/httpcore-nio-4.2-alpha2.jar"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/jackson-core-lgpl-1.9.1.jar"/>
+	<classpathentry kind="lib" path="/Users/sushantk2/Desktop/Online/sushant/project/git/Siri/siri/external/jackson-mapper-lgpl-1.9.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
