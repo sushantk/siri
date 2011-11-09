@@ -23,14 +23,16 @@ public class ModuleHandler implements IRequestCallback {
         RequestContext requestContext = new RequestContext();
         
         String moduleId = args[ 0 ];
-        ModuleHandler handler = new ModuleHandler(requestContext, moduleId, moduleId);
-        handler.execute();
+        ModuleHandler handler1 = new ModuleHandler(requestContext, "iid1", moduleId);
+        ModuleHandler handler2 = new ModuleHandler(requestContext, "iid2", moduleId);
+        handler1.execute();
+        handler2.execute();
         
         TaskManager taskManager = requestContext.getTaskManager();
         taskManager.run();
         
-        Data data = handler.getData();
-        System.out.println("data: " + data);
+        System.out.println("data1: " + handler1.getData());
+        System.out.println("data2: " + handler2.getData());
         
         System.out.println("exit");
      }
