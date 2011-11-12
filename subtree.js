@@ -1,5 +1,10 @@
 {
 
+"simple": {
+  "source": "",
+  "renderer" : ""
+}
+
 "foo": {
   "source": {
     "url": "",

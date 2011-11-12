@@ -1,11 +1,5 @@
 package siri;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.MappingJsonFactory;
-import org.codehaus.jackson.node.ObjectNode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +31,6 @@ public class ModuleHandler implements IRequestCallback {
         System.out.println("exit");
      }
 
-    static JsonFactory s_jsonFactory = new MappingJsonFactory();
-
     String m_moduleId;
     Context m_context;
     IModule m_module;
@@ -50,23 +42,11 @@ public class ModuleHandler implements IRequestCallback {
     
     // should take request context
     Result execute() {
-
-        JsonNode node = null;
         String tree = "{\"source\":{\"url\":\"http://news.yahoo.com/rss/\"}}";
-        try {
-            JsonParser parser = s_jsonFactory.createJsonParser(tree);
-            node = parser.readValueAsTree();
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        
-        if((null == node) || !node.isObject()) {
-            logger.error("{} - Invalid object tree: {}", m_context, tree);
-            logger.error("node: {}", node.asToken());
+        ObjectTree otree = ObjectFactory.parse(m_context, tree);
+        if(null == otree)
             return Result.INVALID_OBJECT_TREE;
-        }
-        
-        ObjectTree otree = new ObjectTree((ObjectNode)node);
+
         m_module = new ModuleDefault(otree);
         return m_module.execute(m_context, this);
     }

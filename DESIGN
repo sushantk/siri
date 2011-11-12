@@ -1,3 +1,11 @@
+Streaming
+
+Open connection
+
+
+Client side framework
+
+
 TaskManager
    * Interleaves sync and async tasks
    * If all sync tasks are over, then waits for an async task to get ready
@@ -9,11 +17,21 @@ SourceWebService
 
 SourceCache
    * "use" for subsource
+      * How can controller override subsource's url?
    * collapse when refreshing
    
 Logging
 
 Event
 
-ObjectTree:
+ObjectTree
    * "use" - two phase configure
+  
+Caching
+   * Memory caching for repo related
+   * JCS for data
+
+Testing
+   * Component testing with mocked inputs.
+   * Logs are critical, think of users trying to debug rather than you. 
+

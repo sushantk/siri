@@ -2,29 +2,64 @@ package siri;
 
 import java.lang.reflect.Constructor;
 
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.map.MappingJsonFactory;
+import org.codehaus.jackson.node.JsonNodeFactory;
+import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ObjectFactory {
     
     static final Logger logger = LoggerFactory.getLogger(ObjectFactory.class);
+    static JsonFactory s_jsonMapper = new MappingJsonFactory();
+    static JsonNodeFactory s_jsonFactory = JsonNodeFactory.instance;
 
-    //TODO: could be generic to return the right interface
-    public static IConfigurable create(Context a_context, IConfigurable a_parent, 
-                                       String a_tag, String a_id, String a_defaultClass,
-                                       boolean a_required) {
-
-        ObjectTree tree = a_parent.getObjectTree();
-        JsonNode root = tree.getRoot();
-        JsonNode node = root.get(a_tag);
-        //TODO: handle array with a_id
+    public static ObjectTree tree() {
+        return new ObjectTree(s_jsonFactory.objectNode());
+    }
+    
+    public static ObjectTree parse(Context a_context, String a_json) {
+        JsonNode node = null;
+        try {
+            JsonParser parser = s_jsonMapper.createJsonParser(a_json);
+            node = parser.readValueAsTree();
+        } catch(Exception ex) {
+            logger.error("", ex);
+        }
+        
         if((null == node) || !node.isObject()) {
-            ObjectFactory.logError(a_context, a_parent, a_tag, a_id, a_required);
+            logger.error("{} - Invalid object tree: {}", a_context, a_json);
+            logger.error("node: {}", node.asToken());
             return null;
         }
         
-        return ObjectFactory.create(a_context, a_parent, node, a_tag, a_id, a_defaultClass);        
+        return new ObjectTree((ObjectNode)node);
+    }
+
+    //TODO: could be generic to return the right interface
+    public static IConfigurable create(Context a_context, IConfigurable a_parent, 
+                                       String a_tag, String a_id, String a_defaultClass, ObjectTree a_tree, 
+                                       boolean a_required) {
+
+        JsonNode root = a_parent.getObjectTree().getRoot();
+        JsonNode node = root.get(a_tag);
+        //TODO: handle array with a_id
+        if((null == node) || !node.isObject()) {
+            ObjectFactory.logError(a_context, a_parent, a_tag, null, a_required);
+            return null;
+        }
+        
+        //TODO: will clone be faster?
+        ObjectNode clonedTree = s_jsonFactory.objectNode();
+        clonedTree.putAll((ObjectNode)node);
+        if(null != a_tree) {
+            clonedTree.putAll((ObjectNode)a_tree.getRoot());
+        }
+        
+        return ObjectFactory.create(a_context, a_parent, clonedTree, a_tag, a_id, a_defaultClass);        
     }
     
     public static String getString(Context a_context, IConfigurable a_parent,
@@ -42,7 +77,7 @@ public class ObjectFactory {
         if(node.isValueNode()) {
             stringObject = new StringDefault(new ObjectTree(node));
         } else if(node.isObject()) {
-            stringObject = (IString)ObjectFactory.create(a_context, a_parent, node, a_tag, null, null);
+            stringObject = (IString)ObjectFactory.create(a_context, a_parent, (ObjectNode)node, a_tag, null, null);
             if(null == stringObject)
                 return null;
         } else {
@@ -54,7 +89,7 @@ public class ObjectFactory {
     }
     
     private static IConfigurable create(Context a_context, IConfigurable a_parent,  
-                                        JsonNode a_node, String a_tag, String a_id, String a_defaultClass) {
+                                        ObjectNode a_node, String a_tag, String a_id, String a_defaultClass) {
 
         JsonNode classAttr = a_node.get("@class");
         String className = a_defaultClass;
