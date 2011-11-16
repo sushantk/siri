@@ -32,69 +32,104 @@ public class ObjectFactory {
         
         if((null == node) || !node.isObject()) {
             logger.error("{} - Invalid object tree: {}", a_context, a_json);
-            logger.error("node: {}", node.asToken());
             return null;
         }
         
         return new ObjectTree((ObjectNode)node);
     }
-
-    //TODO: could be generic to return the right interface
-    public static IConfigurable create(Context a_context, IConfigurable a_parent, 
-                                       String a_tag, String a_id, String a_defaultClass, ObjectTree a_tree, 
-                                       boolean a_required) {
-
-        JsonNode root = a_parent.getObjectTree().getRoot();
-        JsonNode node = root.get(a_tag);
-        //TODO: handle array with a_id
-        if((null == node) || !node.isObject()) {
-            ObjectFactory.logError(a_context, a_parent, a_tag, null, a_required);
-            return null;
+    
+    public static ObjectTree find(Context a_context, ObjectTree a_parent, String a_tag, String a_id) {
+        JsonNode node = ObjectFactory.findNode(a_context, a_parent, a_tag, a_id);
+        if(null != node) {
+            return new ObjectTree(node);
         }
         
-        //TODO: will clone be faster?
-        ObjectNode clonedTree = s_jsonFactory.objectNode();
-        clonedTree.putAll((ObjectNode)node);
-        if(null != a_tree) {
-            clonedTree.putAll((ObjectNode)a_tree.getRoot());
-        }
-        
-        return ObjectFactory.create(a_context, a_parent, clonedTree, a_tag, a_id, a_defaultClass);        
+        return null;
     }
     
-    public static String getString(Context a_context, IConfigurable a_parent,
-                                   String a_tag, boolean a_required) {
-        
-        ObjectTree tree = a_parent.getObjectTree();
-        JsonNode root = tree.getRoot();
+    public static ObjectTree fork(Context a_context, ObjectTree a_parent, String a_tag, String a_id) {
+        JsonNode root = a_parent.getRoot();
         JsonNode node = root.get(a_tag);
-        if(null == node) {
-            ObjectFactory.logError(a_context, a_parent, a_tag, a_required);
-            return null;
+        ObjectNode forkedNode = s_jsonFactory.objectNode();
+        if(null != node) {
+            if((null == a_id) || a_id.isEmpty()) {
+                if(!node.isObject()) return null;
+                forkedNode.putAll((ObjectNode)node);
+            } else if(node.isArray()) {
+                // look for id
+            }
+            
+            return new ObjectTree(forkedNode);            
         }
+        
+        return null;
+    }
+
+    //TODO: could it be generic to return the right interface
+    public static IConfigurable create(Context a_context, ObjectTree a_parent, String a_tag, String a_id, String a_defaultClass) {
+        JsonNode node = ObjectFactory.findNode(a_context, a_parent, a_tag, a_id);
+        if(null != node) {
+            if(node.isObject()) {
+                ObjectFactory.create(a_context, (ObjectNode)node, a_defaultClass);
+            } else {
+                throw new Error(ObjectFactory.fatalError(a_context, a_parent.getRoot(), a_tag, "Expecting object"));
+            }
+        }
+        
+        return null;
+    }
+    
+    public static IConfigurable create(Context a_context, ObjectTree a_tree, String a_defaultClass) {
+        JsonNode node = a_tree.getRoot();
+        if(null != node) {
+            if(node.isObject()) {
+                return ObjectFactory.create(a_context, (ObjectNode)node, a_defaultClass);
+            } else {
+                throw new Error(ObjectFactory.fatalError(a_context, a_tree.getRoot(), "Expecting object"));
+            }
+        }
+        
+        return null;
+    }
+    
+    public static String getString(Context a_context, ObjectTree a_parent, String a_tag) {        
+        JsonNode root = a_parent.getRoot();
+        JsonNode node = root.get(a_tag);
+        if(null == node) return null;
 
         IString stringObject = null;
         if(node.isValueNode()) {
             stringObject = new StringDefault(new ObjectTree(node));
         } else if(node.isObject()) {
-            stringObject = (IString)ObjectFactory.create(a_context, a_parent, (ObjectNode)node, a_tag, null, null);
-            if(null == stringObject)
-                return null;
+            stringObject = (IString)ObjectFactory.create(a_context, (ObjectNode)node, null);
         } else {
-            ObjectFactory.logError(a_context, a_parent, a_tag, "Invalid type for a string");
-            return null;
+            throw new Error(ObjectFactory.fatalError(a_context, root, a_tag, "Invalid object tree for a string"));
         }
         
         return stringObject.get(a_context);
     }
     
-    private static IConfigurable create(Context a_context, IConfigurable a_parent,  
-                                        ObjectNode a_node, String a_tag, String a_id, String a_defaultClass) {
+    private static JsonNode findNode(Context a_context, ObjectTree a_parent, String a_tag, String a_id) {
+        JsonNode root = a_parent.getRoot();
+        JsonNode node = root.get(a_tag);
+        if(null != node) {
+            if((null == a_id) || a_id.isEmpty()) {
+                return node;
+            }
+            
+            // look for id
+            if(node.isArray()) {
+            }
+        }
+        
+        return null;
+    }
 
-        JsonNode classAttr = a_node.get("@class");
+    private static IConfigurable create(Context a_context, ObjectNode a_node, String a_defaultClass) {
         String className = a_defaultClass;
-        //TODO: handle class name attribute
-        if(null != classAttr) {
+        JsonNode classAttr = a_node.get("@class");
+        if((null != classAttr) && classAttr.isTextual()) {
+            className = classAttr.asText();
         }
 
         try {
@@ -103,44 +138,34 @@ public class ObjectFactory {
             Object t = tc.newInstance(new ObjectTree(a_node));
             return (IConfigurable)t;
         } catch (Exception ex) {
-            ObjectFactory.logError(a_context, a_parent, a_tag, a_id, "Failed to instantiate " + className);
-            logger.error("", ex);
-        }
-
-        return null;
-    }
-
-    private static void logError(Context a_context, IConfigurable a_parent, 
-                                 String a_tag, boolean a_required) {        
-        if(a_required) {
-            ObjectFactory.logError(a_context, a_parent, a_tag, null, "A required element is missing");
+            throw new Error(ObjectFactory.fatalError(a_context, a_node, ex.getMessage()));
         }
     }
 
-    private static void logError(Context a_context, IConfigurable a_parent, 
-                                 String a_tag, String a_id, boolean a_required) {        
-        if(a_required) {
-            ObjectFactory.logError(a_context, a_parent, 
-                    a_tag, a_id, "Could not find a required element");
-        }
+    public static void logError(Context a_context, String a_parentTag, ObjectTree a_parent,
+                                String a_tag, String a_error) {
+        ObjectFactory.logError(a_context, a_parentTag, a_parent, a_tag, null, a_error);
     }
 
-    private static void logError(Context a_context, IConfigurable a_parent, 
-                                 String a_tag, String a_error) {
-        ObjectFactory.logError(a_context, a_parent, a_tag, a_error);
-    }
-
-    private static void logError(Context a_context, IConfigurable a_parent, 
-                                 String a_tag, String a_id, String a_error) {
+    public static void logError(Context a_context, String a_parentTag, ObjectTree a_parent,
+                                String a_tag, String a_id, String a_error) {
         if(null == a_id) {
-            logger.error("{} - " + a_error + ", \"{}\" inside {}", 
-                         new Object[]{a_context, a_tag, a_parent.getClass().getName()});
+            logger.error("{} - " + a_error + ", \"{}\" inside \"{}\"", 
+                         new Object[]{a_context, a_tag, a_parentTag});
         } else {
-            logger.error("{} - " + a_error + ", \"{}\" with id \"{}\" inside {}", 
-                    new Object[]{a_context, a_tag, a_id, a_parent.getClass().getName()});            
+            logger.error("{} - " + a_error + ", \"{}\" with id \"{}\" inside \"{}\"", 
+                    new Object[]{a_context, a_tag, a_id, a_parentTag});            
         }
         
-        if(a_context.isLogging()) logger.debug("{} - {} Object tree: {}", 
-                                  new Object[] { a_context, a_parent.getClass().getName(), a_parent.getObjectTree().getRoot().toString()});
+        if(a_context.isLogging()) logger.debug("{} - {} object tree: {}", 
+                                  new Object[] { a_context, a_parentTag, a_parent.getRoot().toString()});
+    }
+
+    private static String fatalError(Context a_context, JsonNode a_node, String a_error) {
+        return (a_context.toString() + " - " + a_error + ", object tree: " + a_node.toString());
+    }
+
+    private static String fatalError(Context a_context, JsonNode a_parent, String a_tag, String a_error) {
+        return (a_context.toString() + " - " + a_error + ", \"" + a_tag + "\" inside: " + a_parent.toString());
     }
 }

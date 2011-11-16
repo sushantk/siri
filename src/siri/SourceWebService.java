@@ -39,9 +39,11 @@ public class SourceWebService extends Configurable
         m_context = a_context;
         m_callback = a_callback;
         
-        m_url = ObjectFactory.getString(m_context, this, Consts.url, true);
-        if(null == m_url)
-            return Result.FAILED;
+        m_url = ObjectFactory.getString(m_context, m_tree, Consts.url);
+        if(null == m_url) {
+            ObjectFactory.logError(m_context, "", m_tree, Consts.url, Consts.error.required);
+            return Result.INVALID_OBJECT_TREE;
+        }
 
         final TaskManager taskManager = a_context.getRequestContext().getTaskManager();
         m_task = this.new WebServiceTask();
