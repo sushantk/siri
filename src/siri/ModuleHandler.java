@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class ModuleHandler implements IRequestCallback {
     
-    static final Logger logger = LoggerFactory.getLogger(ModuleHandler.class);
+    static final Logger s_logger = LoggerFactory.getLogger(ModuleHandler.class);
     static ThreadPoolExecutor s_rendererExecutor = null;
     
     public static void main (String[] args) {
@@ -63,7 +63,7 @@ public class ModuleHandler implements IRequestCallback {
     // should take request context
     Result execute() {
         String tree = "{\"source\":{\"url\":\"http://news.yahoo.com/rss/\"}}";
-        ObjectTree otree = ObjectFactory.parse(m_context, tree);
+        ObjectTree otree = ObjectFactory.parse(m_context, Consts.module, tree);
         if(null == otree)
             return Result.INVALID_OBJECT_TREE;
 

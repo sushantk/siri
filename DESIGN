@@ -1,10 +1,17 @@
+Principles
+   * Simple for user
+   * Reduce boiler plate code
+   * Performance
+   
 Streaming
 
 Open connection
 
-
 Client side framework
 
+Callback
+   * callbacks should return object tree
+   * callback joiner
 
 TaskManager
    * Interleaves sync and async tasks

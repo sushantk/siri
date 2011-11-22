@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 public class StringDefault extends Configurable
                            implements IString {
     
-    static final Logger logger = LoggerFactory.getLogger(StringDefault.class);
+    static final Logger s_logger = LoggerFactory.getLogger(StringDefault.class);
     
     public StringDefault(ObjectTree a_tree) {
         super(a_tree);
@@ -15,7 +15,7 @@ public class StringDefault extends Configurable
 
     @Override
     public String get(Context a_context) {
-        JsonNode node = m_tree.getRoot();
+        JsonNode node = m_tree.getNode();
         if(node.isValueNode()) {
             return StringDefault.evaluate(a_context, node.asText());
         }
@@ -25,7 +25,7 @@ public class StringDefault extends Configurable
     
     public static String evaluate(Context a_context, String a_text) {
         String newText = a_text;
-        if(a_context.isLogging()) logger.trace("{} - Evaluated {}=>{}", new Object[]{a_context, a_text, newText});
+        if(a_context.isLogging()) s_logger.trace("{} - Evaluated {}=>{}", new Object[]{a_context, a_text, newText});
         return newText;
     }
 }

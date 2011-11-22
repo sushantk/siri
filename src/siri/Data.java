@@ -5,6 +5,7 @@ import java.io.InputStream;
 public class Data {
 
     private InputStream m_stream;
+    // result and timedout?
     
     public Data() {
     }

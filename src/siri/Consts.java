@@ -3,6 +3,7 @@ package siri;
 public final class Consts {
 
     // tags
+    public static final String controller = "module";
     public static final String module = "module";
     public static final String source = "source";
     public static final String renderer = "renderer";
@@ -11,6 +12,7 @@ public final class Consts {
     // classes
     public static final String RendererIdentity = "siri.RendererIdentity";
     public static final String SourceWebService = "siri.SourceWebService";
+    public static final String ControllerDefault = "siri.ControllerDefault";
     
     // attributes
     public static final String id = "id";
@@ -20,7 +22,10 @@ public final class Consts {
     public static final String _default = "default";
     
     public static final class error {
-        public static final String required = "Missing element";
+        public static final String missingElement = "Missing element";
+        public static final String missingClass = "Missing @class attribute";
     }
+
+
     
 }

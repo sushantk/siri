@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class SourceWebService extends Configurable
                               implements ISource {
 
-    static final Logger logger = LoggerFactory.getLogger(SourceWebService.class);
+    static final Logger s_logger = LoggerFactory.getLogger(SourceWebService.class);
     static HttpAsyncClient s_httpClient = null;
     
     Context m_context;
@@ -39,11 +39,8 @@ public class SourceWebService extends Configurable
         m_context = a_context;
         m_callback = a_callback;
         
-        m_url = ObjectFactory.getString(m_context, m_tree, Consts.url);
-        if(null == m_url) {
-            ObjectFactory.logError(m_context, "", m_tree, Consts.url, Consts.error.required);
-            return Result.INVALID_OBJECT_TREE;
-        }
+        m_url = ObjectFactory.getString(m_context, m_tree, Consts.url, true);
+        if(null == m_url) return Result.INVALID_OBJECT_TREE;
 
         final TaskManager taskManager = a_context.getRequestContext().getTaskManager();
         m_task = this.new WebServiceTask();
@@ -59,32 +56,32 @@ public class SourceWebService extends Configurable
             s_httpClient.execute(m_request, new FutureCallback<HttpResponse>() {
 
                 public void completed(final HttpResponse response) {
-                    if(m_context.isLogging()) logger.info("{} - Request done: {}=>{}", 
+                    if(m_context.isLogging()) s_logger.info("{} - Request done: {}=>{}", 
                                               new Object[]{m_context, m_request.getRequestLine(), response.getStatusLine()});
                     m_response = response;
                     taskManager.notifyTask(m_task);
                 }
 
                 public void failed(final Exception ex) {
-                    logger.error("{} - Request failed: {}. {}", 
+                    s_logger.error("{} - Request failed: {}. {}", 
                                  new Object[]{m_context, m_url, m_request.getRequestLine()});
-                    if(m_context.isLogging()) logger.debug("", ex);
+                    if(m_context.isLogging()) s_logger.debug("", ex);
                     
                     taskManager.notifyTask(m_task);
                 }
 
                 public void cancelled() {
-                    if(m_context.isLogging()) logger.info("{} - Request cancelled: {}. {}", 
+                    if(m_context.isLogging()) s_logger.info("{} - Request cancelled: {}. {}", 
                                               new Object[]{m_context, m_url, m_request.getRequestLine()});                    
                     taskManager.notifyTask(m_task);
                 }
             });
 
-            if(m_context.isLogging()) logger.info("{} - Request initialized: {}", m_context, m_url);
+            if(m_context.isLogging()) s_logger.info("{} - Request initialized: {}", m_context, m_url);
         } catch(Exception ex) {
-            logger.error("{} - Request failed: {}. {}", 
+            s_logger.error("{} - Request failed: {}. {}", 
                     new Object[]{m_context, m_url, m_request.getRequestLine()});
-            if(m_context.isLogging()) logger.debug("", ex);
+            if(m_context.isLogging()) s_logger.debug("", ex);
 
             taskManager.notifyTask(m_task);
         }        
