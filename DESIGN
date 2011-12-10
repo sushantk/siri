@@ -1,8 +1,80 @@
+
 Principles
    * Simple for user
    * Reduce boiler plate code
+   * Markup and code equally easy
    * Performance
-   
+
+Progressive complexity
+
+// traditional single source and renderer
+"foo" : {
+    "source" : {
+        "url" : "..."
+    }
+
+    "renderer" : {
+        "template" : ".."
+    }
+}
+
+// traditional MVC
+"foo" : {
+
+    /* Controller returns the source id and overriden parameters.
+       On source completion, it may next source id or finish.
+       It also returns the renderer id after it is done with sources. */
+    "controller" : {
+    }
+
+    "source" : [
+       {
+           "@id" : "default",
+           ....
+       },
+       {
+           "@id" : "update",
+           ....
+       },
+    ]
+
+    "renderer" : [
+      {
+           "@id" : "default"
+           "template" : ".."
+      },
+      {
+           "@id" : "config"
+           "template" : ".."
+      }
+    ]
+}
+
+/*  source chain allows to build a model such that it can run on or more sub sources in parallel.
+    it also allows model to provide overriden parameters.
+    on completion, it allows model to chain more sources or construct the final data. */
+{
+    "@id" : "user_weather"
+    "@class" : "SourceChain",
+
+    "model" : {
+        "@class" : "ModelUserWeather"
+    }
+
+    [
+        {
+            "@id" : "user_setting",
+            ...
+        },
+        {
+            "@id" : "weather",
+            ...
+        },
+    ]
+}
+
+
+
 Streaming
 
 Open connection
