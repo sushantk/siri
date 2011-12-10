@@ -1,4 +1,3 @@
-
 Principles
    * Simple for user
    * Reduce boiler plate code
@@ -50,15 +49,20 @@ Progressive complexity
     ]
 }
 
-/*  source chain allows to build a model such that it can run on or more sub sources in parallel.
+/*  model source allows a data object construction from the raw data.
+    it also allows a run one or more sub sources in parallel.
     it also allows model to provide overriden parameters.
     on completion, it allows model to chain more sources or construct the final data. */
 {
     "@id" : "user_weather"
-    "@class" : "SourceChain",
+    "@class" : "SourceModel",
+
+    "dataObject" : {
+        "@class" : "UserWeather" // constructor gets the raw data
+    }
 
     "model" : {
-        "@class" : "ModelUserWeather"
+        "@class" : "ModelUserWeather" // constructor gets the raw data
     }
 
     [
