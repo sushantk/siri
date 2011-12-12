@@ -1,18 +1,19 @@
 Principles
-   * Simple for user
-   * Reduce boiler plate code
-   * Markup and code equally easy
-   * Performance
+   * Module oriented
+   * Simple to get started
+   * Reduce boiler plate code and markup
+   * Markup and code equally accessible
+   * Super performant!!
 
 Progressive complexity
 
 // traditional single source and renderer
 "foo" : {
-    "source" : {
+    "model" : {
         "url" : "..."
     }
 
-    "renderer" : {
+    "view" : {
         "template" : ".."
     }
 }
@@ -26,7 +27,7 @@ Progressive complexity
     "controller" : {
     }
 
-    "source" : [
+    "model" : [
        {
            "@id" : "default",
            ....
@@ -37,7 +38,7 @@ Progressive complexity
        },
     ]
 
-    "renderer" : [
+    "view" : [
       {
            "@id" : "default"
            "template" : ".."
@@ -49,23 +50,44 @@ Progressive complexity
     ]
 }
 
-/*  model source allows a data object construction from the raw data.
-    it also allows a run one or more sub sources in parallel.
+// controller class
+interface Controller {
+    // Config tree would contain the id and the params
+    Callback getModel(Context a_context, ConfigTree a_module, ConfigTree a_model);
+
+    DataObject getFinalResponse(Map<String, DataObject> a_data);
+}
+
+//  this model  allows a data object construction from the raw data.
+{
+    "@id" : ""
+    "@class" : "ModelDataObject",
+
+    "dataObject" : {
+        "@class" : "WeatherDataObject" // constructor gets the raw data
+    }
+
+    // sub model
+    model: {
+    ...
+    }
+}
+
+/*  This model extends from the ModelDataObject.
+    it allows to run one or more sub models in parallel.
     it also allows model to provide overriden parameters.
+    if aggregator is not specified, all the sub models are run
     on completion, it allows model to chain more sources or construct the final data. */
 {
     "@id" : "user_weather"
-    "@class" : "SourceModel",
+    "@class" : "ModelAggregate",
 
-    "dataObject" : {
-        "@class" : "UserWeather" // constructor gets the raw data
+    "aggregator" : {
+        "@class" : "ModelUserWeather"
     }
 
-    "model" : {
-        "@class" : "ModelUserWeather" // constructor gets the raw data
-    }
-
-    [
+    // sub models
+    model: [
         {
             "@id" : "user_setting",
             ...
@@ -82,7 +104,6 @@ Progressive complexity
 Streaming
 
 Open connection
-
 Client side framework
 
 Callback
