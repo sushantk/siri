@@ -52,10 +52,13 @@ Progressive complexity
 
 // controller class
 interface Controller {
-    // Config tree would contain the id and the params
-    ConfigTree getModel(Context a_context, ConfigTree a_module);
+    IModel getModel(Context a_context, ModelCallback a_cb);
+
+    IModel onResponse(Context a_context, ModelCallback a_cb);
 
     DataObject getFinalResponse(Map<String, DataObject> a_data);
+
+    void setConfigTree(ConfigTree a_moduleTree);
 }
 
 //  this model  allows a data object construction from the raw data.
