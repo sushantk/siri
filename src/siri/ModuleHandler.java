@@ -8,7 +8,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ModuleHandler implements IRequestCallback {
+public class ModuleHandler extends Configurable
+                           implements IRequestCallback {
     
     static final Logger s_logger = LoggerFactory.getLogger(ModuleHandler.class);
     static ThreadPoolExecutor s_rendererExecutor = null;
@@ -50,24 +51,35 @@ public class ModuleHandler implements IRequestCallback {
         System.out.println("exit");
      }
 
+    IModule m_module;
+    ISource m_source;
+    
     String m_moduleId;
     Context m_context;
-    IModule m_module;
     Data m_finalData;
     Future<?> m_rendererTask = null;
     
-    ModuleHandler(RequestContext a_requestContext, String a_iid, String a_moduleId) {
-        m_context = new Context(a_requestContext, a_iid, a_moduleId);
+    @SiriParameter(defaultClass="siri.ModuleDefault", required=true)
+    public void setModule(IConfigurable a_module) {
+        m_module = (IModule)a_module;
     }
     
-    // should take request context
+    ModuleHandler(RequestContext a_requestContext, String a_iid, String a_moduleId) {
+        m_context = new Context(a_requestContext, a_iid, a_moduleId);
+        
+        this.setTag(Consts.ModuleHandler);
+    }
+    
+    //TODO should take request context
     Result execute() {
-        String tree = "{\"source\":{\"url\":\"http://news.yahoo.com/rss/\"}}";
-        ObjectTree otree = ObjectFactory.parse(m_context, Consts.module, tree);
-        if(null == otree)
-            return Result.INVALID_OBJECT_TREE;
+        String tree = "{\"Module\":{\"Source\":{\"Url\":\"http://news.yahoo.com/rss/\"}}}";
+        
+        ObjectFactory factory = new ObjectFactory();
+        ObjectTree otree = factory.parse(tree);
+        if(null == otree) return Result.INVALID_OBJECT_TREE;
+        
+        if(Result.SUCCESS != factory.build(this, otree) || (null == m_module)) return Result.INVALID_OBJECT_TREE;
 
-        m_module = new ModuleDefault(otree);
         return m_module.execute(m_context, this);
     }
     

@@ -1,10 +1,9 @@
 package siri;
 
 public class SourceDummy extends Configurable
-                              implements ISource {
+                         implements ISource {
 
-    public SourceDummy(ObjectTree a_tree) {
-        super(a_tree);
+    public SourceDummy() {
     }
 
     @Override

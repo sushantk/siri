@@ -2,6 +2,10 @@ package siri;
 
 public interface IConfigurable {
 
-    ObjectTree getObjectTree();
+    String getTag();
+    String getId();
+    
+    void setTag(String a_tagName);
+    void setId(String a_id);
 
 }

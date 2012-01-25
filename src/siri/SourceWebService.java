@@ -20,17 +20,23 @@ public class SourceWebService extends Configurable
                               implements ISource {
 
     static final Logger s_logger = LoggerFactory.getLogger(SourceWebService.class);
-    static HttpAsyncClient s_httpClient = null;
+    static protected HttpAsyncClient s_httpClient = null;
+
+    protected IString m_iurl;
+    protected String m_url;
+
+    transient Context m_context;
+    transient IRequestCallback m_callback;
+    transient HttpUriRequest m_request;
+    transient HttpResponse m_response;
+    transient ITask m_task;
     
-    Context m_context;
-    IRequestCallback m_callback;
-    ITask m_task;
-    String m_url;
-    HttpUriRequest m_request;
-    HttpResponse m_response = null;
+    public SourceWebService() {
+    }
     
-    public SourceWebService(ObjectTree a_tree) {
-        super(a_tree);
+    @SiriParameter(required=true)
+    public void setUrl(IString a_url) {
+        m_iurl = a_url;
     }
 
     @Override
@@ -39,8 +45,8 @@ public class SourceWebService extends Configurable
         m_context = a_context;
         m_callback = a_callback;
         
-        m_url = ObjectFactory.getString(m_context, m_tree, Consts.url, true);
-        if(null == m_url) return Result.INVALID_OBJECT_TREE;
+        m_url = m_iurl.get(m_context);
+        if(null == m_url) return Result.FAILED;
 
         final TaskManager taskManager = a_context.getRequestContext().getTaskManager();
         m_task = this.new WebServiceTask();

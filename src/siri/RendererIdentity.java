@@ -3,8 +3,7 @@ package siri;
 public class RendererIdentity extends Configurable
                               implements IRenderer {
 
-    public RendererIdentity(ObjectTree a_tree) {
-        super(a_tree);
+    public RendererIdentity() {
     }
 
     @Override

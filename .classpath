@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="external/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="external/jackson-core-lgpl-1.9.1.jar"/>
 	<classpathentry kind="lib" path="external/jackson-mapper-lgpl-1.9.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

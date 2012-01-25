@@ -1,15 +1,16 @@
 package siri;
 
 public abstract class Configurable implements IConfigurable {
+
+    private String m_tagName = "";
+    private String m_id = "";
     
-    public Configurable(ObjectTree a_tree) {
-        assert a_tree != null;
-        m_tree = a_tree;
+    public Configurable() {
     }
     
-    public ObjectTree getObjectTree() {
-        return m_tree;
-    }
-    
-    protected ObjectTree m_tree;
+    public String getTag() { return m_tagName; }
+    public String getId() { return m_id; }
+
+    public void setTag(String a_tagName) { m_tagName = a_tagName; }
+    public void setId(String a_id) { m_id = a_id; }
 }
