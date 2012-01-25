@@ -1,12 +1,137 @@
 Principles
-   * Simple for user
-   * Reduce boiler plate code
-   * Performance
-   
+   * Module oriented
+   * Simple to get started
+   * Reduce boiler plate code and markup
+   * Markup and code equally accessible
+   * Super performant!!
+
+Progressive complexity
+
+// traditional single source and renderer
+"foo" : {
+    "model" : {
+        "url" : "..."
+    }
+
+    "view" : {
+        "template" : ".."
+    }
+}
+
+// traditional MVC
+"foo" : {
+
+    /* Controller returns the source id and overriden parameters.
+       On source completion, it may next source id or finish.
+       It also returns the renderer id after it is done with sources. */
+    "controller" : {
+    }
+
+    "model" : [
+       {
+           "@id" : "default",
+           ....
+       },
+       {
+           "@id" : "update",
+           ....
+       },
+    ]
+
+    "view" : [
+      {
+           "@id" : "default"
+           "template" : ".."
+      },
+      {
+           "@id" : "config"
+           "template" : ".."
+      }
+    ]
+}
+
+class ModelInfo {
+    ModelInfo(IModel a_model, Controller.Continuation a_cb) {
+        m_model = a_model;
+        m_cb = a_cb;
+    }
+    ModelInfo(IModel a_model, Controller.Continuation a_cb, Object a_userData) {
+        m_model = a_model;
+        m_cb = a_cb;
+        m_userData = a_userData;
+    }
+
+    IModel m_model;
+    Controller.Continuation a_cb;
+    Object a_userData = null;
+    DataObject a_do = null; // module sets this after the model is done executing
+}
+
+// controller class
+interface Controller {
+    // Module calls this method to start execution, controller returns the first model to execute.
+    ModelInfo getModel(Context a_context);
+    
+    interface Continuation {
+        // Module calls this method when a model is done executing.
+        // It returns the next model to execute or null if done.
+        // Note that the same class can implement both Controller and Continuation if desired or
+        // the Continuation can be implemented as an inner annonymous class.
+        ModelInfo getNextModel(Context a_context, ModelInfo a_info);
+    }
+
+    // Module calls this method once it is done with all the model executions as indicated by the controller.
+    DataObject getFinalData(Map<String, ModelInfo> a_info);
+
+    void setConfigTree(ConfigTree a_moduleTree);
+}
+
+//  this model  allows a data object construction from the raw data.
+{
+    "@id" : ""
+    "@class" : "ModelDataObject",
+
+    "dataObject" : {
+        "@class" : "WeatherDataObject" // constructor gets the raw data
+    }
+
+    // sub model
+    model: {
+    ...
+    }
+}
+
+/*  This model extends from the ModelDataObject.
+    it allows to run one or more sub models in parallel.
+    it also allows model to provide overriden parameters.
+    if aggregator is not specified, all the sub models are run
+    on completion, it allows model to chain more sources or construct the final data. */
+{
+    "@id" : "user_weather"
+    "@class" : "ModelAggregate",
+
+    "aggregator" : {
+        "@class" : "ModelUserWeather"
+    }
+
+    // sub models
+    model: [
+        {
+            "@id" : "user_setting",
+            ...
+        },
+        {
+            "@id" : "weather",
+            ...
+        },
+    ]
+}
+
+
+
 Streaming
 
 Open connection
-
 Client side framework
 
 Callback
