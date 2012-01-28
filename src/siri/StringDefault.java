@@ -13,9 +13,10 @@ public class StringDefault extends Configurable
     public StringDefault() {
     }
 
+    @SiriParameter(required=true)
     public void setValue(String a_value) {
         m_value = a_value;
-        // see if this needs evaluation or is a literal
+        //TODO: check if this needs evaluation or is a literal
     }
 
     @Override

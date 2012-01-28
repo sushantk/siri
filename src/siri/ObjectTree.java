@@ -1,16 +1,16 @@
 package siri;
 
-import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ObjectNode;
 
 public final class ObjectTree {
 
-    JsonNode m_node;
+    ObjectNode m_node;
 
-    public ObjectTree(JsonNode a_node) {
+    public ObjectTree(ObjectNode a_node) {
         m_node = a_node;
     }
 
-    JsonNode getNode() {
+    ObjectNode getNode() {
         return m_node;
     }    
 }

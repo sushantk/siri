@@ -9,7 +9,7 @@ public class Context {
 
     private boolean m_logging;
 
-    Context(RequestContext a_requestContext, String a_iid, String a_moduleId) {
+    public Context(RequestContext a_requestContext, String a_iid, String a_moduleId) {
         m_requestContext = a_requestContext;
 
         m_iid = a_iid;
@@ -47,7 +47,7 @@ public class Context {
             return m_string;
         }
         
-        m_string = "Context[ " + m_moduleId + " ][ " + m_iid + " ]";
+        m_string = "Context<" + m_moduleId + ", " + m_iid + ">";
         return m_string;
     }
 

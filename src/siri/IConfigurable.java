@@ -7,5 +7,6 @@ public interface IConfigurable {
     
     void setTag(String a_tagName);
     void setId(String a_id);
-
+    
+    String toDebugString();
 }

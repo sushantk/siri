@@ -12,15 +12,19 @@ public final class Consts {
     
     // attributes
     public static final String id = "@id";
-    public static final String _class = "@class";    
+    public static final String _class = "@class";
+    public static final String Value = "Value";
     
     public static final String renderer_id = "renderer_id";
     public static final String _default = "default";
         
     // other
-    public static final String defaultClass = "siri.StringDefault";
-    public static String comma = ",";
+    public static final String defaultAddMethod = "addParameter";
+    public static final String defaultSetValueMethod = "setValue";
+    public static final String defaultStringClass = "siri.StringDefault";
+    public static final String defaultParamsClass = "siri.ParamsDefault";
+    public static final boolean defaultRequired = false;
+    public static final boolean defaultList = false;
+    public static final String comma = ",";
 
-
-    
 }

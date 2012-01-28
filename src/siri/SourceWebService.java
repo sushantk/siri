@@ -39,6 +39,9 @@ public class SourceWebService extends Configurable
         m_iurl = a_url;
     }
 
+    public void setHeaders(IConfigurable a_params) {
+    }
+
     @Override
     public Result get(Context a_context, IRequestCallback a_callback) {
         

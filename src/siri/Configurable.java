@@ -13,4 +13,12 @@ public abstract class Configurable implements IConfigurable {
 
     public void setTag(String a_tagName) { m_tagName = a_tagName; }
     public void setId(String a_id) { m_id = a_id; }
+    
+    public String toDebugString() {
+        return this.toString();
+    }
+    
+    public String toString() {
+        return m_tagName + "<" + this.getClass().getName() + ", " + m_id + ">"; 
+    }
 }
